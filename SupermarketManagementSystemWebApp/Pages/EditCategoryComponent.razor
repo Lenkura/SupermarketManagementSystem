@@ -1,0 +1,64 @@
+﻿@page "/editcategory/{categoryID}";
+
+@inject NavigationManager NaviagationManager
+@inject IEditCategoryUseCase EditCategoryUseCase
+@inject IGetCategoryByIDUseCase GetCategoryByIDUseCase
+
+<h3>Edit Category</h3>
+
+@if (category != null)
+{
+                <EditForm Model="category" OnValidSubmit="validSubmit">
+                    <DataAnnotationsValidator></DataAnnotationsValidator>
+                    <ValidationSummary ></ValidationSummary>
+
+                    <div class="form-group">
+                        <label for="name">Name</label>
+                        <InputText id="name" @bind-Value="category.Name" class="form-control"></InputText>
+                    </div>
+
+                        <div class="form-group">
+                                <label for="description">Description</label>
+                                <InputText id="description" @bind-Value="category.Description" class="form-control"></InputText>
+                        </div>
+                        <br/>
+                        <button type="submit" class="btn btn-primary">Save</button>
+                            <button type="button" @onclick="OnCancel" class="btn btn-danger">Cancel</button>
+                </EditForm>
+}
+
+@code {
+    [Parameter]
+    public string CategoryID { get; set; }
+
+
+    private Category category;
+
+    protected override void OnInitialized()
+    {
+        base.OnInitialized();
+    }
+    protected override void OnParametersSet()
+    {
+        base.OnParametersSet();
+
+        if (int.TryParse(this.CategoryID, out int editcategoryID))
+        {
+            var cat = GetCategoryByIDUseCase.Execute(editcategoryID);
+            this.category = new Category { CategoryID = cat.CategoryID, Name = cat.Name, Description = cat.Description};
+        }
+
+    }
+
+
+    private void validSubmit()
+    {
+        EditCategoryUseCase.Execute(this.category);
+        NaviagationManager.NavigateTo("/categories");
+    }
+
+    private void OnCancel()
+    {
+        NaviagationManager.NavigateTo("/categories");
+    }
+}

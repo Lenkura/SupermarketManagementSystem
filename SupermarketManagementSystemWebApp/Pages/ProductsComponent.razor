@@ -1,0 +1,67 @@
+﻿@page "/products";
+@inject NavigationManager NavigationManager
+@inject IViewProductsUseCase ViewProductsUseCase
+@inject IGetCategoryByIDUseCase GetCategoryByIDUseCase
+@inject IDeleteProductUseCase DeleteProductUseCase
+
+<h3>Products</h3>
+
+@if (products != null)
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Product Category</th>
+                <th>Product Name</th>
+                <th>Price</th>
+                <th>Quantity</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach(var product in products)
+            {
+                <tr>
+                    <td>@GetCategoryByIDUseCase.Execute(product.CategoryID.Value)?.Name</td>
+                    <td>@product.Name</td>
+                    <td>@(Math.Round(product.Price.Value,2))</td>
+                    <td>@product.Quantity</td>
+                    <td><button type="button" @onclick="()=>EditProduct(product) " class="btn btn-outline-primary" >Edit</button>
+                        <button type="button"  @onclick="()=>DeleteProduct(product.ProductID)" class="btn btn-outline-primary" >Delete</button></td>
+                </tr>
+            }
+        </tbody>
+    </table>
+    <br/>
+    <button type="button" @onclick="OnClickAddProduct" class="btn btn-primary" >Add Product</button>
+}
+@code {
+    private IEnumerable<Product> products;
+
+    protected override void OnInitialized()
+    {
+        base.OnInitialized();
+        LoadCategories();
+    }
+
+    private void OnClickAddProduct()
+    {
+        NavigationManager.NavigateTo("/addproduct");
+    }
+
+    private void EditProduct(Product product)
+    {
+        NavigationManager.NavigateTo($"/editproduct/{product.ProductID}");
+    }
+
+    private void DeleteProduct(int productID)
+    {
+        DeleteProductUseCase.Execute(productID);
+        LoadCategories();
+    }
+
+    private void LoadCategories()
+    {
+        products = ViewProductsUseCase.Execute()?.ToList();
+    }
+}
