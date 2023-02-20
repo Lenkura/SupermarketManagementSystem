@@ -18,6 +18,7 @@ builder.Services.AddSingleton<WeatherForecastService>();
 //Dependency Injection for the In-Memory Data Store
 builder.Services.AddScoped<ICategoryRepository, CategoryInMemoryRepository>();
 builder.Services.AddScoped<IProductRepository, ProductInMemoryRepository>();
+builder.Services.AddScoped<ITransactionRepository, TransactionRepository>();
 
 //Dependency Injection for Use Cases and Repositories
 builder.Services.AddTransient<IViewCategoriesUseCase, ViewCategoriesUseCase>();
@@ -32,6 +33,8 @@ builder.Services.AddTransient<IGetProductByIDUseCase, GetProductByIDUseCase>();
 builder.Services.AddTransient<IDeleteProductUseCase, DeleteProductUseCase>();
 builder.Services.AddTransient<IViewProductsByCategoryID, ViewProductsByCategoryID>();
 builder.Services.AddTransient<ISellProductUseCase, SellProductUseCase>();
+builder.Services.AddTransient<IRecordTransactionsUseCase, RecordTransactionsUseCase>();
+builder.Services.AddTransient<IGetTodayTransactionsUseCase, GetTodayTransactionsUseCase>();
 
 var app = builder.Build();
 
