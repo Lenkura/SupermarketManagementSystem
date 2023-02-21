@@ -57,5 +57,13 @@ namespace Plugins.DataStore.InMemory
                 CashierName = cashiername
             });
         }
+
+        public IEnumerable<Transaction> Search(string cashierName, DateTime startDate, DateTime endDate)
+        {
+            if (string.IsNullOrEmpty(cashierName))
+                return transactions.Where(x => x.Timestamp >= startDate.Date && x.Timestamp <= endDate.Date.AddDays(1).Date);
+            else
+                return transactions.Where(x => string.Equals(x.CashierName, cashierName, StringComparison.OrdinalIgnoreCase) && x.Timestamp >= startDate.Date && x.Timestamp <= endDate.Date.AddDays(1).Date);
+        }
     }
 }
