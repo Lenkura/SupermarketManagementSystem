@@ -1,7 +1,10 @@
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Web;
+using Microsoft.EntityFrameworkCore;
 using Plugins.DataStore.InMemory;
+using Plugins.DataStore.SQL;
 using SupermarketManagementSystemWebApp.Data;
+using System.Net.Security;
 using UseCases;
 using UseCases.CategoriesUseCase;
 using UseCases.DataStorePluginInterfaces;
@@ -19,6 +22,11 @@ builder.Services.AddSingleton<WeatherForecastService>();
 builder.Services.AddScoped<ICategoryRepository, CategoryInMemoryRepository>();
 builder.Services.AddScoped<IProductRepository, ProductInMemoryRepository>();
 builder.Services.AddScoped<ITransactionRepository, TransactionRepository>();
+
+builder.Services.AddDbContext<MarketContext>(options =>
+{
+    options.UseSqlServer("name=ConnectionStrings:DefaultConnection");
+});
 
 //Dependency Injection for Use Cases and Repositories
 builder.Services.AddTransient<IViewCategoriesUseCase, ViewCategoriesUseCase>();
