@@ -18,10 +18,16 @@ builder.Services.AddRazorPages();
 builder.Services.AddServerSideBlazor();
 builder.Services.AddSingleton<WeatherForecastService>();
 
-//Dependency Injection for the In-Memory Data Store
-builder.Services.AddScoped<ICategoryRepository, CategoryInMemoryRepository>();
+//Dependency Injection for the In-Memory Data Store (redundant with server)
+/*builder.Services.AddScoped<ICategoryRepository, CategoryInMemoryRepository>();
 builder.Services.AddScoped<IProductRepository, ProductInMemoryRepository>();
+builder.Services.AddScoped<ITransactionRepository, TransactionInMemoryRepository>();*/
+
+//Dependency Injection for the SQL Server
+builder.Services.AddScoped<ICategoryRepository, CategoryRepository>();
+builder.Services.AddScoped<IProductRepository, ProductRepository>();
 builder.Services.AddScoped<ITransactionRepository, TransactionRepository>();
+
 
 builder.Services.AddDbContext<MarketContext>(options =>
 {

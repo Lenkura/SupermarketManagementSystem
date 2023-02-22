@@ -8,15 +8,20 @@ using UseCases.DataStorePluginInterfaces;
 
 namespace Plugins.DataStore.InMemory
 {
-    public class TransactionRepository : ITransactionRepository
+    public class TransactionInMemoryRepository : ITransactionRepository
     {
         private List<Transaction> transactions;
-        public TransactionRepository()
+        public TransactionInMemoryRepository()
         { 
             transactions = new List<Transaction>();
         }
 
-        public IEnumerable<Transaction> GetAll(string cashierName,DateTime date)
+        public IEnumerable<Transaction> Get()
+        {
+            return transactions;
+        }
+
+        public IEnumerable<Transaction> GetAllCashier(string cashierName)
         {
             if (string.IsNullOrEmpty(cashierName))
                 return transactions;
