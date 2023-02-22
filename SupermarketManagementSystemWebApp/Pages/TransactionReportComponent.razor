@@ -1,72 +1,82 @@
 ﻿@page "/transactions"
 @inject IGetTransactionsUseCase GetTransactionsUseCase 
+@inject IJSRuntime JSRuntime
 
-<h3>TransactionReportComponent</h3>
+<h3>Transaction Report</h3>
 
-<div class="row">
-    <div class="col-4"> 
-        <label for="cashier">Cashier Name</label>
-        <input type="text" id="cashier" class="form-control" @bind-value=cashierName />
+<div id="printarea">
+    <div class="row">
+        <div class="col-2" > 
+            <label for="cashier">Cashier Name</label>
+            <input type="text" id="cashier" class="form-control" @bind-value=cashierName />
+        </div>
+        <div class="col-3"> 
+            <label for="startdate">Start Date</label>
+            <input type="date" id="startdate" class="form-control" @bind-value=startDate />
+        </div>
+        <div class="col-3"> 
+            <label for="enddate">End Date</label>
+            <input type="date" id="enddate" class="form-control" @bind-value=endDate />
+        </div>
+        <div class="col-2"> 
+            <label>&nbsp;</label>
+            <button type="button" class=" btn btn-primary form-control no-print" @onclick="LoadTransactions"> Search </button>
+        </div>
+        <div class="col-2"> 
+            <label>&nbsp;</label>
+            <button type="button" class=" btn btn-primary form-control no-print" @onclick="PrintReport"> Print </button>
+        </div>
     </div>
-    <div class="col-3"> 
-        <label for="startdate">Start Date</label>
-        <input type="date" id="startdate" class="form-control" @bind-value=startDate />
-    </div>
-    <div class="col-3"> 
-        <label for="enddate">End Date</label>
-        <input type="date" id="enddate" class="form-control" @bind-value=endDate />
-    </div>
-    <div class="col-2"> 
-        <button type="button" class=" btn btn-primary" @onclick="LoadTransactions"> Search </button>
-    </div>
-</div>
 
 @if (transactions != null)
-{
-    <table class="table">
-        <thead>
-            <tr>
-                <th>Date</th>
-                <th>Cashier</th>
-                <th>Product</th>
-                <th>Price</th>
-                <th>No. Sold</th>
-                <th>Stock Level Prior</th>
-                <th>Stock Level After</th>
-                <th>Transaction Value</th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach (var tr in transactions)
-            {
-                    <tr>
-                        <td>@tr.Timestamp.ToString("yyyy-MM-dd hh:mm")</td>
-                        <td>@tr.CashierName</td>
-                        <td>@tr.ProductName</td>
-                        <td>@(string.Format("{0:c}",tr.Price))</td>
-                        <td>@tr.SoldQuantity</td>
-                        <td>@tr.PriorQuantity</td>
-                        <td>@(tr.PriorQuantity - tr.SoldQuantity)</td>
-                        <td>@(string.Format("{0:c}", tr.SoldQuantity * tr.Price))</td>
-                    </tr>
-            }
- 
-        </tbody>
-        <tfoot>
-          <tr>
-                <td colspan="5">&nbsp;</td>
-                <td style="text-align:right">
-                    <b>Grand Total:</b>
-                </td>
-                <td>
-                    <b>
-                        @(string.Format("{0:c}", @transactions.Sum(x => x.Price)))
-                    </b>
-                </td>
-          </tr>
-        </tfoot>
-    </table>
+    {
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Date</th>
+                    <th>Cashier</th>
+                    <th>Product</th>
+                    <th>Price</th>
+                    <th>No. Sold</th>
+                    <th>Stock Level Prior</th>
+                    <th>Stock Level After</th>
+                    <th>Transaction Value</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var tr in transactions)
+                {
+                            <tr>
+                                <td>@tr.Timestamp.ToString("yyyy-MM-dd hh:mm")</td>
+                                <td>@tr.CashierName</td>
+                                <td>@tr.ProductName</td>
+                                <td>@(string.Format("{0:c}", tr.Price))</td>
+                                <td>@tr.SoldQuantity</td>
+                                <td>@tr.PriorQuantity</td>
+                                <td>@(tr.PriorQuantity - tr.SoldQuantity)</td>
+                                <td>@(string.Format("{0:c}", tr.SoldQuantity * tr.Price))</td>
+                            </tr>
+                }
+
+            </tbody>
+            <tfoot>
+              <tr>
+                    <td colspan="5">&nbsp;</td>
+                    <td style="text-align:right">
+                        <b>Grand Total:</b>
+                    </td>
+                    <td>
+                        <b>
+                            @(string.Format("{0:c}", @transactions.Sum(x => x.Price)))
+                        </b>
+                    </td>
+              </tr>
+            </tfoot>
+        </table>
 }
+ </div>
+
+
 
 @code {
     private string cashierName;
@@ -85,5 +95,9 @@
     private void LoadTransactions()
     {
         transactions = GetTransactionsUseCase.Execute(cashierName, startDate, endDate);
+    }
+    private void PrintReport()
+    {
+        JSRuntime.InvokeVoidAsync("print");
     }
 }
